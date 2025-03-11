@@ -1,0 +1,44 @@
+---
+- name: Install and Configure FDO Manufacturing Server
+  hosts: fdo
+  become: yes
+  vars:
+    rv_dns_prefix: "rendezvous"
+    base_domain: "sandbox559.opentlc.com"
+  tasks:
+  - name: load secrets from ansible vault
+    include_vars:
+      file: "./vars/secrets.yml"
+      
+  - name: check if system is registered
+    ansible.builtin.stat:
+      path: /etc/insights-client/.registered
+    register: registered
+  
+  - name: register the system
+    when: not registered.stat.exists
+    block:
+    - name: Register with subscription manager
+      ansible.builtin.shell: |
+        subscription-manager register --username={{ rhuser }} --password={{ rhpassword }} --force
+        subscription-manager role --set="Red Hat Enterprise Linux Server"
+        subscription-manager service-level --set="Self-Support"
+        subscription-manager usage --set="Development/Test"
+        subscription-manager attach
+        subscription-manager config --rhsm.manage_repos=1
+
+    - name: Connect system to Red Hat
+      ansible.builtin.shell: |
+        rhc connect --username={{ rhuser }} --password={{ rhpassword }}
+  
+  - name: Install configure Manufacturing Server
+    block:
+    - name: Install
+      ansible.builtin.include_role:
+        name: community.fdo.setup_manufacturing_server
+    - name: Configure
+      ansible.builtin.include_role:
+        name: community.fdo.configure_manufacturing_server
+      vars:
+        enable_roll_back: false
+        manufacturing_server_rendezvous_info_dns: "{{ rv_dns_prefix }}.{{ base_domain }}"

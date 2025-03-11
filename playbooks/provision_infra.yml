@@ -82,14 +82,14 @@
                   ansible_host: "{{ manufacturing_private_dns }}"
                   ansible_port: 22
                   ansible_user: "{{ admin_user }}"
-                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/authorized_keys"
                 rendezvous:
                   ansible_host: "{{ rendezvous_private_dns }}"
                   ansible_port: 22
                   ansible_user: "{{ admin_user }}"
-                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/authorized_keys"
                 owneronboarding:
                   ansible_host: "{{ oob_private_dns }}"
                   ansible_port: 22
                   ansible_user: "{{ admin_user }}"
-                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"    
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/authorized_keys"    
