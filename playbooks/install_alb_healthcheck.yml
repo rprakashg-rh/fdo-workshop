@@ -1,0 +1,10 @@
+---
+# Install alb health check container on all FDO servers
+- name: Install Alb Health check
+  hosts: fdo
+  gather_facts: true
+  
+  tasks:
+  - name: install haproxy
+    ansible.builtin.include_role:
+      name: rprakashg.demos.install_haproxy
