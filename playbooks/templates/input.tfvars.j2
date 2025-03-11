@@ -1,0 +1,47 @@
+my_ip = "{{ my_ip }}"
+config = {
+    stack                = "{{ stack }}"
+    base_domain         = "{{ base_domain }}",
+    region              = "{{ aws_region }}",
+    ssh_key             = "{{ ssh_key }}",
+    admin_user          = "admin",
+    admin_user_password = "R3dh4t1!",
+    dbs = [
+    {
+        name            = "mfgownervouchers",
+        instance_type   = "db.t4g.micro",
+        user            = "mfgdbuser",
+    },
+    {
+        name            = "rvsregistered",
+        instance_type   = "db.t4g.micro",
+        user            = "rvsdbuser",
+    },
+    {
+        name            = "ownervouchers",
+        instance_type   = "db.t4g.micro",
+        user            = "oobdbuser",        
+    }
+    ],
+    manufacturing = {
+        name            = "manufacturing-node",
+        dns_prefix      = "manufacturing"
+        instance_type   = "t2.large",
+        port            = 8080,
+        replicas        = 1,
+    },
+    rendezvous = { 
+        name          = "rendezvous-node",
+        dns_prefix    = "rendezvous",
+        instance_type = "t2.large",
+        port          = 8082
+        replicas      = 1,
+    },
+    owneronboarding = {
+        name            = "owner-node",
+        dns_prefix      = "owneronboarding",
+        instance_type   = "t2.large",
+        port            = 8081
+        replicas        = 1,
+    }
+}

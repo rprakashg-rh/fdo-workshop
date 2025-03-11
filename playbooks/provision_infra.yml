@@ -1,0 +1,95 @@
+---
+- name: Provision FDO Server Infrastructure
+  hosts: localhost
+  gather_facts: true
+  vars:
+    base_domain: sandbox559.opentlc.com
+    aws_region: us-west-2
+    my_ip: 136.27.40.26/32
+    stack: fdo-stack
+    ssh_key: fdo_rsa
+  tasks:
+  - name: Create a temp directory to run the terraform scripts from
+    ansible.builtin.tempfile:
+      state: directory
+      suffix: terraform
+    register: tempfile_result
+  
+  - name: Debug tfdir path
+    ansible.builtin.debug:
+      msg: "Temp directory to run terraform scripts from: {{ tempfile_result.path }}"
+  
+  - name: Set directory in fact
+    ansible.builtin.set_fact:
+      tfdir: "{{ tempfile_result.path }}"
+
+  - name: Copy terraform scripts
+    ansible.builtin.copy:
+      src: "../terraform/"
+      dest: "{{ tfdir }}"
+
+  - name: Generate tfvars
+    ansible.builtin.template:
+      src: input.tfvars.j2
+      dest: "{{ tfdir }}/input.tfvars"
+
+  - name: Apply terraform scripts
+    community.general.terraform:
+      project_path: "{{ tfdir }}"
+      state: present
+      force_init: true
+      provider_upgrade: true
+      variables_files:
+      - input.tfvars
+
+  - name: Fetch terraform outputs and set facts
+    block:
+    - name: Get manufacturing server host private dns
+      ansible.builtin.command:
+        cmd: terraform output -raw manufacturing_private_dns
+        chdir: "{{ tfdir }}"
+      register: tf_output_manufacturing_private_dns_result
+    - name: Set manufacturing host private dns in fact
+      ansible.builtin.set_fact:
+        manufacturing_private_dns: "{{ tf_output_manufacturing_private_dns_result.stdout }}"
+    - name: Get Rendezvous server host private dns
+      ansible.builtin.command:
+        cmd: terraform output -raw rendezvous_private_dns
+        chdir: "{{ tfdir }}"
+      register: tf_output_rendezvous_private_dns_result
+    - name: Set Rendezvous server host private dns in fact
+      ansible.builtin.set_fact:
+        rendezvous_private_dns: "{{ tf_output_rendezvous_private_dns_result.stdout }}"
+    - name: Get Owner server host private dns
+      ansible.builtin.command:
+        cmd: terraform output -raw oob_private_dns
+        chdir: "{{ tfdir }}"
+      register: tf_oob_private_dns_result
+    - name: Set Owner Onboarding server host private dns in fact
+      ansible.builtin.set_fact:
+        oob_private_dns: "{{ tf_oob_private_dns_result.stdout }}"
+
+  - name: Create ansible inventory file
+    ansible.builtin.file:
+      dest: ./inventory
+      content: |
+        ---
+        all:
+          children:
+            fdo:
+              hosts:
+                manufacturing:
+                  ansible_host: "{{ manufacturing_private_dns }}"
+                  ansible_port: 22
+                  ansible_user: "{{ admin_user }}"
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"
+                rendezvous:
+                  ansible_host: "{{ rendezvous_private_dns }}"
+                  ansible_port: 22
+                  ansible_user: "{{ admin_user }}"
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"
+                owneronboarding:
+                  ansible_host: "{{ oob_private_dns }}"
+                  ansible_port: 22
+                  ansible_user: "{{ admin_user }}"
+                  ansible_ssh_private_key_file: "{{ ansible_user_dir }}/.ssh/{{ ssh_key }}"    
