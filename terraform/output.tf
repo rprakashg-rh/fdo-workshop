@@ -5,15 +5,15 @@ output "alb_dns_name" {
 
 output "manufacturing_private_dns" {
   description = "Manufacturing server private DNS"
-  value       = module.manufacturing.private_dns
+  value       = module.manufacturing.private_dns[0]
 }
 
 output "rendezvous_private_dns" {
   description = "Rendezvous server private DNS"
-  value       = module.rendezvous.private_dns
+  value       = module.rendezvous.private_dns[0]
 }
 
 output "oob_private_dns" {
   description = "Owner Onboarding server private DNS"
-  value       = module.owneronboarding.private_dns
+  value       = module.owneronboarding.private_dns[0]
 }
