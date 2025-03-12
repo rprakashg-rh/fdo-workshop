@@ -31,6 +31,12 @@
       ansible.builtin.shell: |
         rhc connect --username={{ rhuser }} --password={{ rhpassword }}
 
+  - name: Create /etc/fdo/keys directory
+    ansible.builtin.file:
+      path: /etc/fdo/keys
+      state: directory
+      mode: '0755'
+
   - name: Copy Manufacturer Certificate
     ansible.builtin.copy:
       src: "~/certs/manufacturer_cert.pem"
@@ -41,6 +47,8 @@
     - name: Install
       ansible.builtin.include_role:
         name: community.fdo.setup_rendezvous_server
+      vars:
+        copy_manufacturer_certs: false
     - name: Configure
       ansible.builtin.include_role:
         name: community.fdo.configure_rendezvous_server
