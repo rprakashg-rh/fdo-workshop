@@ -1,0 +1,9 @@
+---
+- name: Fetch Certificates and keys to localhost
+  hosts: fdo
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Copy certificates from manufacturing to local host
+      ansible.builtin.include_role:
+        name: community.fdo.fetch_manufacturing_server_certs_to_localhost
