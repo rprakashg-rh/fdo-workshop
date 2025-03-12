@@ -52,3 +52,5 @@
     - name: Configure
       ansible.builtin.include_role:
         name: community.fdo.configure_rendezvous_server
+      vars:
+        copy_manufacturer_certs: false
