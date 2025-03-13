@@ -42,3 +42,5 @@
       vars:
         enable_roll_back: false
         manufacturing_server_rendezvous_info_dns: "{{ rv_dns_prefix }}.{{ base_domain }}"
+        manufacturing_server_rendezvous_info_owner_port: 80
+        manufacturing_server_rendezvous_info_deviceport: 80
