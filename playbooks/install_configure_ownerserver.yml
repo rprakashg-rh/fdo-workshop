@@ -67,3 +67,4 @@
       vars:
         owner_onboarding_server_owner_addresses_dns_name: "{{ owner_server_dns_prefix }}.{{ base_domain }}"
         copy_manufacturer_certs: false
+        enable_roll_back: false
