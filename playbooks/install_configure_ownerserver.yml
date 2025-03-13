@@ -36,6 +36,11 @@
 
   - name: Copy certs and keys
     block:
+    - name: Create the /etc/fdo/keys dir
+      ansible.builtin.file:
+        path: /etc/fdo/keys
+        state: directory
+        mode: '0755'
     - name: Copy device ca cert
       ansible.builtin.copy:
         src: "~/certs/device_ca_cert.pem"
