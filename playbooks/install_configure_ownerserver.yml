@@ -1,0 +1,64 @@
+---
+# Install and configure FDO Owner Server
+- name: Install and configure FDO Owner Server
+  hosts: fdo
+  gather_facts: true
+  become: true
+  vars:
+    owner_server_dns_prefix: "owneronboarding"
+    base_domain: "sandbox559.opentlc.com"
+
+  tasks:
+  - name: load secrets from ansible vault
+    include_vars:
+      file: "./vars/secrets.yml"
+  
+  - name: check if system is registered
+    ansible.builtin.stat:
+      path: /etc/insights-client/.registered
+    register: registered
+        
+  - name: register the system
+    when: not registered.stat.exists
+    block:
+    - name: Register with subscription manager
+      ansible.builtin.shell: |
+        subscription-manager register --username={{ rhuser }} --password={{ rhpassword }} --force
+        subscription-manager role --set="Red Hat Enterprise Linux Server"
+        subscription-manager service-level --set="Self-Support"
+        subscription-manager usage --set="Development/Test"
+        subscription-manager attach
+        subscription-manager config --rhsm.manage_repos=1
+
+    - name: Connect system to Red Hat
+      ansible.builtin.shell: |
+        rhc connect --username={{ rhuser }} --password={{ rhpassword }}
+
+  - name: Copy certs and keys
+    block:
+    - name: Copy device ca cert
+      ansible.builtin.copy:
+        src: "~/certs/device_ca_cert.pem"
+        dest: "/etc/fdo/keys/device_ca_cert.pem" 
+    - name: Copy owner private key 
+      ansible.builtin.copy:
+        src: "~/certs/owner_key.der"
+        dest: "/etc/fdo/keys/owner_key.der"
+    - name: Copy owner public key 
+      ansible.builtin.copy:
+        src: "~/certs/owner_cert.pem"
+        dest: "/etc/fdo/keys/owner_cert.pem"
+
+  - name: Install configure owner onboarding server
+    block:
+    - name: Install
+      ansible.builtin.include_role:
+        name: community.fdo.setup_owner_server
+      vars:
+        copy_manufacturer_certs: false
+    - name: Configure
+      ansible.builtin.include_role:
+        name: community.fdo.configure_owner_server
+      vars:
+        owner_onboarding_server_owner_addresses_dns_name: "{{ owner_server_dns_prefix }}.{{ base_domain }}"
+        copy_manufacturer_certs: false
