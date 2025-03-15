@@ -54,24 +54,17 @@
         src: "~/certs/owner_cert.pem"
         dest: "/etc/fdo/keys/owner_cert.pem"
 
-  - name: Install configure owner onboarding server
-    block:
-    - name: Install
-      ansible.builtin.include_role:
-        name: community.fdo.setup_owner_server
-      vars:
-        copy_manufacturer_certs: false
-    - name: Configure
-      ansible.builtin.include_role:
-        name: community.fdo.configure_owner_server
-      vars:
-        owner_onboarding_server_owner_addresses_dns_name: "{{ owner_server_dns_prefix }}.{{ base_domain }}"
-        copy_manufacturer_certs: false
-        enable_roll_back: false
-        owner_onboarding_server_service_info_api_authentication_token: "{{ service_info_api_server_auth_token }}"
-        serviceinfo_api_server_service_info_auth_token: "{{ service_info_api_server_auth_token }}"
-        serviceinfo_api_server_admin_auth_token: "{{ serviceinfo_api_server_admin_auth_token }}"
-        serviceinfo_api_server_service_info_initial_user_username: "{{ admin_user }}"
-        serviceinfo_api_server_service_info_initial_user_password: "{{ admin_password }}"
-        serviceinfo_api_server_service_info_initial_user_sshkeys: "{{ admin_ssh_key }}"
+  - name: Deploy owner onboarding server
+    ansible.builtin.include_role:
+      name: community.fdo.deploy_owner_server
+    vars:
+      owner_onboarding_server_owner_addresses_dns_name: "{{ owner_server_dns_prefix }}.{{ base_domain }}"
+      copy_manufacturer_certs: false
+      enable_roll_back: false
+      owner_onboarding_server_service_info_api_authentication_token: "{{ service_info_api_server_auth_token }}"
+      serviceinfo_api_server_service_info_auth_token: "{{ service_info_api_server_auth_token }}"
+      serviceinfo_api_server_admin_auth_token: "{{ serviceinfo_api_server_admin_auth_token }}"
+      serviceinfo_api_server_service_info_initial_user_username: "{{ admin_user }}"
+      serviceinfo_api_server_service_info_initial_user_password: "{{ admin_password }}"
+      serviceinfo_api_server_service_info_initial_user_sshkeys: "{{ admin_ssh_key }}"
         

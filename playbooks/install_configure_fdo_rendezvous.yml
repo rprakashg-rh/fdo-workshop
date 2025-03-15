@@ -42,15 +42,8 @@
       src: "~/certs/manufacturer_cert.pem"
       dest: "/etc/fdo/keys/manufacturer_cert.pem"
   
-  - name: Install and configure Rendezvous server
-    block:
-    - name: Install
-      ansible.builtin.include_role:
-        name: community.fdo.setup_rendezvous_server
-      vars:
-        copy_manufacturer_certs: false
-    - name: Configure
-      ansible.builtin.include_role:
-        name: community.fdo.configure_rendezvous_server
-      vars:
-        copy_manufacturer_certs: false
+  - name: Deploy Rendezvous server
+    ansible.builtin.include_role:
+      name: community.fdo.deploy_rendezvous_server
+    vars:
+      copy_manufacturer_certs: false

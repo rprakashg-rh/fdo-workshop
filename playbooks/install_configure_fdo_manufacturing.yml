@@ -31,16 +31,11 @@
       ansible.builtin.shell: |
         rhc connect --username={{ rhuser }} --password={{ rhpassword }}
   
-  - name: Install configure Manufacturing Server
-    block:
-    - name: Install
-      ansible.builtin.include_role:
-        name: community.fdo.setup_manufacturing_server
-    - name: Configure
-      ansible.builtin.include_role:
-        name: community.fdo.configure_manufacturing_server
-      vars:
-        enable_roll_back: false
-        manufacturing_server_rendezvous_info_dns: "{{ rv_dns_prefix }}.{{ base_domain }}"
-        manufacturing_server_rendezvous_info_owner_port: 80
-        manufacturing_server_rendezvous_info_deviceport: 80
+  - name: Deploy FDO Manufacturing Server
+    ansible.builtin.include_role:
+      name: community.fdo.deploy_manufacturing_server
+    vars:
+      enable_roll_back: false
+      manufacturing_server_rendezvous_info_dns: "{{ rv_dns_prefix }}.{{ base_domain }}"
+      manufacturing_server_rendezvous_info_owner_port: 80
+      manufacturing_server_rendezvous_info_deviceport: 80
