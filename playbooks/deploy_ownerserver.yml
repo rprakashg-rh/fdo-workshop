@@ -7,7 +7,7 @@
   vars:
     owner_server_dns_prefix: "owneronboarding"
     base_domain: "sandbox559.opentlc.com"
-
+    rpm: true
   tasks:
   - name: load secrets from ansible vault
     include_vars:

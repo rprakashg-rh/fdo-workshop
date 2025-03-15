@@ -1,10 +1,11 @@
 ---
-- name: Install and Configure FDO Manufacturing Server
+- name: Deploy FDO Manufacturing Server
   hosts: fdo
   become: yes
   vars:
     rv_dns_prefix: "rendezvous"
     base_domain: "sandbox559.opentlc.com"
+    rpm: true
   tasks:
   - name: load secrets from ansible vault
     include_vars:
@@ -35,7 +36,7 @@
     ansible.builtin.include_role:
       name: community.fdo.deploy_manufacturing_server
     vars:
-      enable_roll_back: false
+      rpm: "{{ rpm }}"
       manufacturing_server_rendezvous_info_dns: "{{ rv_dns_prefix }}.{{ base_domain }}"
       manufacturing_server_rendezvous_info_owner_port: 80
       manufacturing_server_rendezvous_info_deviceport: 80
