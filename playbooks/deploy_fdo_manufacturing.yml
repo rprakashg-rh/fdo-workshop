@@ -1,6 +1,6 @@
 ---
 - name: Deploy FDO Manufacturing Server
-  hosts: fdo
+  hosts: groups['manufacturing']
   become: yes
   vars:
     rv_dns_prefix: "rendezvous"
