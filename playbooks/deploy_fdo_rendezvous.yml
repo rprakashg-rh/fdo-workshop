@@ -1,7 +1,7 @@
 ---
 # Install and configure FDO Rendezvous server
 - name: Install and configure FDO Rendezvous Server
-  hosts: groups['rendezvous']
+  hosts: rendezvous
   become: yes
   gather_facts: true
 
